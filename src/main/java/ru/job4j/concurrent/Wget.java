@@ -1,5 +1,6 @@
 package ru.job4j.concurrent;
 
+
 /**
  * Режим ожидания.
  * Задание:
