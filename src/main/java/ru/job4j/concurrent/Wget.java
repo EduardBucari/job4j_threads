@@ -1,8 +1,5 @@
 package ru.job4j.concurrent;
 
-import javax.swing.table.TableRowSorter;
-import java.time.Year;
-
 /**
  * Режим ожидания.
  * Задание:
