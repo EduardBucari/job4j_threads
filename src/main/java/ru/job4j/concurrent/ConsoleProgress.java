@@ -29,6 +29,14 @@ public class ConsoleProgress implements Runnable {
         progress.interrupt();
     }
 
+
+    /**
+     * Прерывание блокированной нити.
+     * Задание:
+     * Поправьте код в классе ru.job4j.concurrent.ConsoleProgress.
+     * В блоке catch уберите исключение [e.printStackTrace();]
+     * и добавьте прерывание [Thread.currentThread().interrupt();]
+     */
     @Override
     public void run() {
         String[] process = {"\\", "|", "/"};
@@ -40,7 +48,7 @@ public class ConsoleProgress implements Runnable {
                     System.out.print("\r load: " + s);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }
