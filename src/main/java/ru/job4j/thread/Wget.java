@@ -47,7 +47,7 @@ public class Wget implements Runnable {
                     startTime = System.currentTimeMillis();
                 }
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
