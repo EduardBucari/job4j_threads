@@ -18,38 +18,63 @@ public class Wget implements Runnable {
 
     private final String url;
     private final int speed;
+    private final String out;
 
-    public Wget(String url, int speed) {
+    public Wget(String url, int speed, String out) {
         this.url = url;
         this.speed = speed;
+        this.out = out;
     }
 
     @Override
     public void run() {
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-             FileOutputStream fileOutputStream = new FileOutputStream("pom_tmp.xml")) {
-            byte[] dataBuffer = new byte[1024];
+             FileOutputStream fileOutputStream = new FileOutputStream(out)) {
+            byte[] dataBuffer = new byte[speed];
             int bytesRead;
-            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+            long bytesWrited = 0;
+            long deltaTime;
+            var startTime = System.currentTimeMillis();
+            while ((bytesRead = in.read(dataBuffer, 0, speed)) != -1) {
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
-
-                int time = speed - bytesRead;
-                if (time < 0) {
-                    time = speed + bytesRead;
+                bytesWrited += bytesRead;
+                if (bytesWrited >= speed) {
+                    deltaTime = System.currentTimeMillis() - startTime;
+                    if (deltaTime < 1000) {
+                        Thread.sleep(1000 - deltaTime);
+                    }
+                    bytesWrited = 0;
+                    startTime = System.currentTimeMillis();
                 }
-                Thread.sleep(time);
             }
-        } catch (IOException | InterruptedException e) {
+        }catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
     public static void main(String[] args) throws InterruptedException {
+        validate(args);
         String url = args[0];
-        int speed = Integer.parseInt(args[1]);
-        Thread wget = new Thread(new Wget(url, speed));
+        int speed = Integer.parseInt(args[1]) * 1024 * 1024;
+        String out = args[2];
+        Thread wget = new Thread(new Wget(url, speed, out));
         wget.start();
         wget.join();
+    }
+
+    private static void validate(String[] args) {
+        if (args.length != 3) {
+            throw new IllegalArgumentException("Аргументы в формате: url speed target "
+            + System.lineSeparator()
+            + "url - страница для парсинга" + System.lineSeparator()
+            + "speed - ограничение скорости скачивания (Мбайт/с)" + System.lineSeparator()
+            + "target - фаил для сохранения");
+        }
+        if (args[1].length() > 100) {
+            throw new IllegalArgumentException("Измерение скорости второго параметра (Мбайт/с)");
+        }
     }
 }
 
