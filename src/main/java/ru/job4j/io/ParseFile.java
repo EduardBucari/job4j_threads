@@ -38,7 +38,7 @@ public class ParseFile implements Connector {
         StringBuilder output = new StringBuilder();
         try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file))) {
             int data;
-            while ((data = in.read()) > 0) {
+            while ((data = in.read()) > -1) {
                 output.append((char) data);
                 if (filter.test((char) data)) {
                     output.append((char) data);
