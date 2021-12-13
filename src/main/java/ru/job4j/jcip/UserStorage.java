@@ -44,8 +44,8 @@ public class UserStorage {
         User second = users.get(told);
         if (first != null && second != null
               && first.getAmount() >= amount) {
-            first.setAmount(users.get(fromId).getAmount() - amount);
-            second.setAmount(users.get(told).getAmount() + amount);
+            first.setAmount(first.getAmount() - amount);
+            second.setAmount(second.getAmount() + amount);
             return true;
         }
         return false;
