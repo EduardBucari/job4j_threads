@@ -17,7 +17,7 @@ import java.util.function.Predicate;
  *
  *   Для решения, дополнительно создадим класс OutPutFile и интерфес Connector.
  */
-public class ParseFile implements Connector {
+public final class ParseFile implements Connector {
 
     private final File file;
 
