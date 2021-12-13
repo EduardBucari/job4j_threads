@@ -14,11 +14,8 @@ import java.util.function.Predicate;
  * - Нарушен принцип единой ответственности. Тут нужно сделать два класса.
  * - Методы getContent написаны в стиле копипаста.
  *   Нужно применить шаблон стратегия: content(Predicate^Character> filter).
- *
- *   Для решения, дополнительно создадим класс OutPutFile и интерфес Connector.
  */
-public final class ParseFile implements Connector {
-
+public final class ParseFile {
     private final File file;
 
     public ParseFile(File file) {
@@ -26,25 +23,27 @@ public final class ParseFile implements Connector {
     }
 
     public String getContent() {
-        return content((i) -> true);
+        synchronized (this) {
+            return content(file, data -> true);
+        }
     }
 
     public String getContentWithoutUnicode() {
-        return content((i) -> i < 0x80);
+        synchronized (this) {
+        return content(file, data -> data < 0x80);
+        }
     }
 
-    @Override
-    public String content(Predicate<Character> filter) {
+    private String content(File file, Predicate<Character> filter) {
         StringBuilder output = new StringBuilder();
-        try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file))) {
+        try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
             int data;
-            while ((data = in.read()) > -1) {
-                output.append((char) data);
+            while ((data = in.read()) != -1) {
                 if (filter.test((char) data)) {
                     output.append((char) data);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return output.toString();
