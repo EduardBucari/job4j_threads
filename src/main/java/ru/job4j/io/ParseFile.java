@@ -22,19 +22,7 @@ public final class ParseFile {
         this.file = file;
     }
 
-    public String getContent() {
-        synchronized (this) {
-            return content(file, data -> true);
-        }
-    }
-
-    public String getContentWithoutUnicode() {
-        synchronized (this) {
-        return content(file, data -> data < 0x80);
-        }
-    }
-
-    private String content(File file, Predicate<Character> filter) {
+    private String content(Predicate<Character> filter) {
         StringBuilder output = new StringBuilder();
         try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
             int data;
