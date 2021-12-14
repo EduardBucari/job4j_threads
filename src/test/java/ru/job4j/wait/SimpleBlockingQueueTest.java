@@ -1,12 +1,20 @@
 package ru.job4j.wait;
 
-
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public class SimpleBlockingQueueTest {
 
+
     @Test
     public void whenLogicSimpleBlocking() throws InterruptedException {
+        CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
         SimpleBlockingQueue<Integer> smb = new SimpleBlockingQueue<>(5);
         Thread first = new Thread(() -> {
             try {
@@ -18,7 +26,7 @@ public class SimpleBlockingQueueTest {
         Thread second = new Thread(
                 () -> {
                     try {
-                        smb.poll();
+                        buffer.add(smb.poll());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -28,17 +36,19 @@ public class SimpleBlockingQueueTest {
         first.start();
         second.start();
         first.join();
+        second.interrupt();
         second.join();
+        assertThat(buffer, is(Collections.singletonList(3)));
     }
-
 
     @Test
     public void whenLogicSimpleBlockingTwo() throws InterruptedException {
-        SimpleBlockingQueue<Integer> smb = new SimpleBlockingQueue<>(8);
+        CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
+        SimpleBlockingQueue<Integer> smb = new SimpleBlockingQueue<>(5);
         Thread first = new Thread(
                 () -> {
                     int i = 0;
-                    while (i < 8) {
+                    while (i < 5) {
                         i++;
                         try {
                             smb.offer(3);
@@ -52,7 +62,7 @@ public class SimpleBlockingQueueTest {
         Thread second = new Thread(
                 () -> {
                     try {
-                        smb.poll();
+                        buffer.add(smb.poll());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -62,16 +72,19 @@ public class SimpleBlockingQueueTest {
         first.start();
         second.start();
         first.join();
+        second.interrupt();
         second.join();
+        assertThat(buffer, is(Arrays.asList(3)));
     }
 
     @Test
     public void whenLogicBlockingThree() throws InterruptedException {
+        CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
         SimpleBlockingQueue<Integer> smb = new SimpleBlockingQueue<>(5);
         Thread first = new Thread(
                 () -> {
                     int i = 0;
-                    while (i < 7) {
+                    while (i < 3) {
                         i++;
                         try {
                             smb.offer(3);
@@ -79,16 +92,17 @@ public class SimpleBlockingQueueTest {
                             e.printStackTrace();
                         }
                     }
+                    Thread.currentThread().interrupt();
                 }
         );
 
         Thread second = new Thread(
                 () -> {
                    int i = 0;
-                   while (i < 6) {
+                   while (i < 3) {
                        i++;
                        try {
-                           smb.poll();
+                           buffer.add(smb.poll());
                        } catch (InterruptedException e) {
                            e.printStackTrace();
                        }
@@ -98,6 +112,8 @@ public class SimpleBlockingQueueTest {
         first.start();
         second.start();
         first.join();
+        second.interrupt();
         second.join();
+        assertThat(buffer, is(Arrays.asList(3, 3, 3)));
     }
 }
