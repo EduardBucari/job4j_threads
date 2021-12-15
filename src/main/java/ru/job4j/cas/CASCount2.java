@@ -14,10 +14,10 @@ import java.util.concurrent.atomic.AtomicReference;
  * java.util.concurrent.atomic.AtomicReference)
  */
 @ThreadSafe
-public class CASCount {
+public class CASCount2 {
     private final AtomicReference<Integer> count = new AtomicReference<>();
 
-    public CASCount(int value) {
+    public CASCount2(int value) {
         this.count.set(value);
     }
 
@@ -35,14 +35,14 @@ public class CASCount {
     }
 
     public static void main(String[] args) {
-        CASCount casCount = new CASCount(2);
-        casCount.increment();
-        System.out.println(casCount.get());
-        casCount.increment();
-        System.out.println(casCount.get());
-        casCount.increment();
-        System.out.println(casCount.get());
-        casCount.increment();
-        System.out.println(casCount.get());
+        CASCount2 casCount2 = new CASCount2(2);
+        casCount2.increment();
+        System.out.println(casCount2.get());
+        casCount2.increment();
+        System.out.println(casCount2.get());
+        casCount2.increment();
+        System.out.println(casCount2.get());
+        casCount2.increment();
+        System.out.println(casCount2.get());
     }
 }
